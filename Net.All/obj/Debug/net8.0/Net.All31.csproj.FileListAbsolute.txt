@@ -1,0 +1,13 @@
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all31\Net.All31\obj\Debug\net8.0\Net.All31.csproj.AssemblyReference.cache
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all31\Net.All31\obj\Debug\net8.0\Net.All31.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all31\Net.All31\obj\Debug\net8.0\Net.All31.AssemblyInfoInputs.cache
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all31\Net.All31\obj\Debug\net8.0\Net.All31.AssemblyInfo.cs
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all31\Net.All31\obj\Debug\net8.0\Net.All31.csproj.CoreCompileInputs.cache
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all31\Net.All31\obj\Debug\net8.0\Net.All31.sourcelink.json
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all31\Net.All31\bin\Debug\net8.0\Net.All31.deps.json
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all31\Net.All31\bin\Debug\net8.0\Net.All31.dll
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all31\Net.All31\bin\Debug\net8.0\Net.All31.pdb
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all31\Net.All31\obj\Debug\net8.0\Net.All31.dll
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all31\Net.All31\obj\Debug\net8.0\refint\Net.All31.dll
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all31\Net.All31\obj\Debug\net8.0\Net.All31.pdb
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all31\Net.All31\obj\Debug\net8.0\ref\Net.All31.dll

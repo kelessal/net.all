@@ -1,0 +1,12 @@
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\bin\Debug\net8.0\Net.All.deps.json
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\bin\Debug\net8.0\Net.All.dll
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\bin\Debug\net8.0\Net.All.pdb
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\Net.All.csproj.AssemblyReference.cache
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\Net.All.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\Net.All.AssemblyInfoInputs.cache
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\Net.All.AssemblyInfo.cs
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\Net.All.csproj.CoreCompileInputs.cache
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\Net.All.dll
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\refint\Net.All.dll
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\Net.All.pdb
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\ref\Net.All.dll
