@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <IsPublishable>True</IsPublishable>
+    <PackageProjectUrl>https://github.com/kelessal/net.all</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
