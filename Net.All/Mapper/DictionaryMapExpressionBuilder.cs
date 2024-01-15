@@ -42,7 +42,7 @@ namespace Net.Mapper
             }
             return result;
         }
-        static T ConvertComplexToExpandoMapping<T>(IDictionary<string, object> src)
+        static T ConvertComplexToDictionaryMapping<T>(IDictionary<string, object> src)
             where T : class
         {
             if (src == null) return null;
