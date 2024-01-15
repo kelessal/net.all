@@ -6,7 +6,7 @@ using System.Reflection;
 using Net.Extensions;
 namespace Net.Reflection
 {
-    public class TypeInfo
+    public sealed partial  class TypeInfo
     {
         static ConcurrentDictionary<Type, TypeInfo> _objectInfos = new ConcurrentDictionary<Type, TypeInfo>();
 
@@ -15,6 +15,7 @@ namespace Net.Reflection
         public string DashedName { get; private set; }
         public TypeKind Kind { get; private set; }
         public TypeInfo ElementTypeInfo { get; private set; }
+        public TypeInfo KeyTypeInfo { get; private set; }
 
         private readonly HashSet<Type> BaseInterfaces = new HashSet<Type>();
         public IEnumerable<Type> GetBaseInterfaces() => this.BaseInterfaces.AsEnumerable();
@@ -80,9 +81,11 @@ namespace Net.Reflection
                 info.DashedName = type.IsInterface && type.Name.StartsWith("I") ?
                     type.Name.Substring(1).ToDashCase() : type.Name.ToDashCase();
                 workingInfos.Add(type, info);
-                info.Kind = info.Type.GetTypeKind();
+                info.Kind =info.GetTypeKind(info.Type);
                 if (info.Kind == TypeKind.Complex)
                     info.ParseProperties(workingInfos);
+                if (info.Kind == TypeKind.Dictionary)
+                    info.ParseDictionary();
                 else if (info.Kind == TypeKind.Collection)
                     info.ElementTypeInfo = GetTypeInfo(info.Type.GetCollectionElementType(), workingInfos);
                 _objectInfos[type] = info;
@@ -95,7 +98,8 @@ namespace Net.Reflection
                         IncludeInterfaces(subType);
                     }
                 }
-                IncludeInterfaces(type);
+                if(info.Kind==TypeKind.Complex)
+                    IncludeInterfaces(type);
                 return info;
             }
 
@@ -103,15 +107,7 @@ namespace Net.Reflection
 
 
 
-        private void ParseProperties(Dictionary<Type, TypeInfo> workingTypes)
-        {
-            foreach (var propInfo in this.Type.FindProperties())
-            {
-               var prop = TypePropertyInfo.Create(this,propInfo, workingTypes);
-                this._allProperties[propInfo.Name] = prop;
-                this._camelCaseProperties[prop.CamelName] = prop;
-            }
-        }
+        
 
         public T GetAttribute<T>()
             where T : Attribute

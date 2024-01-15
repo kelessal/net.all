@@ -7,7 +7,15 @@ namespace Net.Mapper
 {
     public class Mapper
     {
+        static bool IsMappableOf(Type source, Type dest)
+        {
+            if (source == dest) return true;
+            var srcInfo = source.GetInfo();
+            var destInfo = source.GetInfo();
+            if (srcInfo.Kind != destInfo.Kind) return false;
+            return srcInfo.Kind != TypeKind.Unknown;
 
+        }
         readonly TypePair TypePair;
         public readonly LambdaExpression LambdaExpression;
         private Delegate CompiledDelegate;
@@ -26,7 +34,7 @@ namespace Net.Mapper
 
             this.TypePair = new TypePair(pair.SrcType, pair.DestType.IsInterface ?
                 InterfaceType.GetProxyType(pair.DestType): pair.DestType);
-            this.CanMappable = pair.SrcType.IsMappableOf(this.TypePair.DestType);
+            this.CanMappable = IsMappableOf(this.TypePair.SrcType, this.TypePair.DestType);
             if (!this.CanMappable)  return;
             this.LambdaExpression = CreateExpression();
         }
@@ -41,10 +49,10 @@ namespace Net.Mapper
 
         private LambdaExpression CreateExpression()
         {
-            var typeKind = this.TypePair.SrcType.GetTypeKind();
-            if (this.TypePair.IsSameTypes)
-               return PrimitiveMapExpressionBuilder.Create(this.TypePair);
-            switch (typeKind)
+            var srcTypeInfo = this.TypePair.SrcType.GetInfo();
+            //if (this.TypePair.IsSameTypes)
+            //   return PrimitiveMapExpressionBuilder.Create(this.TypePair);
+            switch (srcTypeInfo.Kind)
             {
                 case TypeKind.Primitive:
                    return PrimitiveMapExpressionBuilder.Create(this.TypePair);

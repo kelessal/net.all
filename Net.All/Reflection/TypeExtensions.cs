@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Net.Reflection
 {
@@ -18,29 +19,7 @@ namespace Net.Reflection
         static readonly char[] PROP_SPLITTER = new char[] { '.' };
 
         static readonly ConcurrentDictionary<Type, MethodCollection> _genericMethods = new ConcurrentDictionary<Type, MethodCollection>();
-        static readonly HashSet<Type> primitiveTypes = new HashSet<Type>(new[]
-       {
-            typeof(string),
-            typeof(int),
-            typeof(int?),
-            typeof(double),
-            typeof(double?),
-            typeof(float),
-            typeof(float?),
-            typeof(decimal),
-            typeof(decimal?),
-            typeof(long),
-            typeof(long?),
-            typeof(Guid),
-            typeof(Guid?),
-            typeof(DateTime),
-            typeof(DateTime?),
-            typeof(bool),
-            typeof(bool?),
-            //typeof(TimeSpan),
-            //typeof(TimeSpan?),
-            typeof(byte)
-        });
+       
         public static Type GetGenericClosedTypeOf(this Type type, Type genericTypeDef)
         {
             if (!genericTypeDef.IsGenericTypeDefinition)
@@ -162,20 +141,9 @@ namespace Net.Reflection
                 | BindingFlags.Public | BindingFlags.Instance);
 
         }
-        public static TypeKind GetTypeKind(this Type type)
-        {
-            if (type.Name.Contains("AnonymousType")) return TypeKind.Complex;
-            if (type.IsPrimitiveType()) return TypeKind.Primitive;
-            if (type.IsCollectionType()) return TypeKind.Collection;
-            if (!type.IsGenericTypeDefinition  &&(type.IsClass || type.IsInterface)) return TypeKind.Complex;
-            return TypeKind.Unknown;
-        }
-      
-        public static bool IsPrimitiveType(this Type type)
-            => primitiveTypes.Contains(type) || type.IsEnum;
+        
         public static bool IsAssignableTo<T>(this Type type)
             => typeof(T).IsAssignableFrom(type);
-
       
         public static bool HasInterface(this Type type, Type interfaceType)
         {
@@ -189,15 +157,7 @@ namespace Net.Reflection
                     return p.GetGenericTypeDefinition() == interfaceType;
                 });
         }
-        public static bool IsCollectionType(this Type type)
-        {
-            if (!typeof(IEnumerable).IsAssignableFrom(type)) return false;
-            if (type.IsArray && type.GetArrayRank() == 1) return true;
-            if (!type.IsGenericType) return false;
-            if (type.GetGenericArguments().Length != 1) return false;
-            return typeof(IEnumerable<>).MakeGenericType(type.GetCollectionElementType()).IsAssignableFrom(type);
-        }
-
+       
         public static IEnumerable<Type> GetBaseTypes(this Type type)
         {
             Type currentType = type.BaseType;

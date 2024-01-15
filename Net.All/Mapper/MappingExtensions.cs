@@ -244,53 +244,8 @@ namespace Net.Mapper
 
         }
 
-        public static bool IsMappableOf(this Type source, Type dest)
-        {
-            if (source == dest) return true;
-            var srcInfo = source.GetInfo();
-            var destInfo = source.GetInfo();
-            if (srcInfo.Kind != destInfo.Kind) return false;
-            return srcInfo.Kind != TypeKind.Unknown;
-
-        }
-
-
-        public static void DicMapping<TKey, T, TItem, TVal>(this Dictionary<TKey, T> dic,
-            IEnumerable<TItem> items,
-            Func<TItem, TKey> keyExp,
-            Func<T, TVal> valExp,
-            Action<TItem, TVal> action)
-        {
-            foreach (var item in items.Where(p => p != null))
-            {
-                var key = keyExp(item);
-                if (key == null) continue;
-                if (!dic.ContainsKey(key)) continue;
-                var val = valExp(dic[key]);
-                action(item, val);
-            }
-        }
-        public static void DicMapping<TKey, T, TItem, TVal>(this Dictionary<TKey, T> dic,
-           IEnumerable<TItem> items,
-           Func<TItem, IEnumerable<TKey>> keyExp,
-           Func<T, TVal> valExp,
-           Action<TItem, IEnumerable<TVal>> action)
-        {
-            foreach (var item in items.Where(p => p != null))
-            {
-                var keyList = keyExp(item);
-                if (keyList == null) continue;
-                List<TVal> result = new List<TVal>();
-                foreach (var key in keyList)
-                {
-                    if (!dic.ContainsKey(key)) continue;
-                    var val = valExp(dic[key]);
-                    result.Add(val);
-                }
-                action(item, result);
-
-            }
-        }
+        
+        
        
     }
 }
