@@ -5,6 +5,8 @@
         Unknown,
         Primitive,
         Complex,
-        Collection
+        Collection,
+        Dictionary,
+        Dynamic
     }
 }

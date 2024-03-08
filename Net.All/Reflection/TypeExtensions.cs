@@ -1,5 +1,6 @@
 ﻿using Net.Extensions;
 using Net.Json;
+using Net.Mapper;
 using Net.Proxy;
 using Net.Reflection;
 using Newtonsoft.Json.Linq;
@@ -10,13 +11,12 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Net.Reflection
 {
     public static class TypeExtensions
     {
-        static readonly char[] PROP_SPLITTER = new char[] { '.' };
-
         static readonly ConcurrentDictionary<Type, MethodCollection> _genericMethods = new ConcurrentDictionary<Type, MethodCollection>();
         static readonly HashSet<Type> primitiveTypes = new HashSet<Type>(new[]
        {
@@ -41,79 +41,42 @@ namespace Net.Reflection
             //typeof(TimeSpan?),
             typeof(byte)
         });
-        public static Type GetGenericClosedTypeOf(this Type type, Type genericTypeDef)
+
+        static readonly char[] PROP_SPLITTER = new char[] { '.' };
+        public static T As<T>(this object item)
         {
-            if (!genericTypeDef.IsGenericTypeDefinition)
-                throw new SystemException("It is not generic type  definition");
-            var baseType = type.BaseType;
-            if (baseType == typeof(object) || baseType == null) return null;
-            if (baseType.IsGenericType && baseType.GetGenericTypeDefinition() == genericTypeDef)
-                return baseType;
-            return baseType.GetGenericClosedTypeOf(genericTypeDef);
-        }
-        public static string GetFriendlyName(this Type type)
-        {
-            if (type == typeof(int))
-                return "int";
-            else if (type == typeof(short))
-                return "short";
-            else if (type == typeof(byte))
-                return "byte";
-            else if (type == typeof(bool))
-                return "bool";
-            else if (type == typeof(long))
-                return "long";
-            else if (type == typeof(float))
-                return "float";
-            else if (type == typeof(double))
-                return "double";
-            else if (type == typeof(decimal))
-                return "decimal";
-            else if (type == typeof(string))
-                return "string";
-            else if (type.IsGenericType)
-                return type.Name.Split('`')[0] + "<" + string.Join(", ", type.GetGenericArguments().Select(x => GetFriendlyName(x)).ToArray()) + ">";
-            else
-                return type.Name;
-        }
-       
-        public static PropertyInfo[] GetPropertyInfos(this Type type, string propName)
-        {
-            List<PropertyInfo> result = new List<PropertyInfo>();
-            PropertyInfo curInfo = null;
-            foreach (var name in propName.Split(PROP_SPLITTER, StringSplitOptions.RemoveEmptyEntries))
-            {
-                curInfo = curInfo == null ? type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance) :
-                    curInfo.PropertyType.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
-                if (curInfo == null) return null;
-                result.Add(curInfo);
-            }
-            return result.Count == 0 ? null : result.ToArray();
-        }
-        public static PropertyInfo GetSubProperty(this Type type, string propName)
-        {
-            PropertyInfo curInfo = null;
-            foreach (var name in propName.Split(PROP_SPLITTER, StringSplitOptions.RemoveEmptyEntries))
-            {
-                curInfo = curInfo == null ? type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance) :
-                    curInfo.PropertyType.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
-                if (curInfo == null) return null;
-            }
-            return curInfo;
-        }
-        
-        public static bool IsNullableOf(this Type nullableType,Type type)
-            => nullableType.IsGenericType && Nullable.GetUnderlyingType(nullableType) == type;
-        
-        public static Type GetCollectionElementType(this Type type)
-        {
-            if (type.IsArray) return type.GetElementType();
-            if (!type.IsGenericType) return null;
-            if (type.GetGenericArguments().Length > 1) return null;
-            return type.GetGenericArguments()[0];
+            if (item.IsNull()) return default;
+            if (item is T titem) return titem;
+            return item.AsCloned<T>();
         }
 
-         
+        public static object As(this object item, Type asType)
+        {
+            if (item.IsNull()) return default;
+            if (asType.IsAssignableFrom(item.GetType())) return item;
+            return item.AsCloned(asType);
+        }
+
+       
+        public static object AsCloned(this object item, Type type = default)
+        {
+            if (item.IsNull()) return default;
+            if (type == null)
+            {
+                if (item is IProxyData)
+                    type = InterfaceType.GetIntefaceTypeOfProxy(item);
+                else
+                    type = item.GetType();
+            }
+
+            return item.ObjectMap(type);
+        }
+        public static T AsCloned<T>(this object item)
+        {
+            if (item.IsNull()) return default;
+            return (T)item.ObjectMap(typeof(T));
+        }
+
         public static MethodInfo FindMethod(this Type type, string methodName, Func<MethodInfo, bool> finder, params Type[] genericParameters)
         {
             if (_genericMethods.ContainsKey(type))
@@ -123,6 +86,7 @@ namespace Net.Reflection
             return gmcollection.SearchMethod(methodName, finder, genericParameters);
 
         }
+
         public static PropertyInfo[] FindProperties(this Type type)
         {
             if (type.IsInterface)
@@ -162,76 +126,102 @@ namespace Net.Reflection
                 | BindingFlags.Public | BindingFlags.Instance);
 
         }
-        public static TypeKind GetTypeKind(this Type type)
-        {
-            if (type.Name.Contains("AnonymousType")) return TypeKind.Complex;
-            if (type.IsPrimitiveType()) return TypeKind.Primitive;
-            if (type.IsCollectionType()) return TypeKind.Collection;
-            if (!type.IsGenericTypeDefinition  &&(type.IsClass || type.IsInterface)) return TypeKind.Complex;
-            return TypeKind.Unknown;
-        }
-      
-        public static bool IsPrimitiveType(this Type type)
-            => primitiveTypes.Contains(type) || type.IsEnum;
-        public static bool IsAssignableTo<T>(this Type type)
-            => typeof(T).IsAssignableFrom(type);
-
-      
-        public static bool HasInterface(this Type type, Type interfaceType)
-        {
-            if (!interfaceType.IsInterface)
-                throw new SystemException("It is not interface");
-            return type.GetInterfaces()
-                .Any(p => {
-                    if (p == interfaceType) return true;
-                    if (!interfaceType.IsGenericTypeDefinition) return false;
-                    if (!p.IsGenericType) return false;
-                    return p.GetGenericTypeDefinition() == interfaceType;
-                });
-        }
-        public static bool IsCollectionType(this Type type)
-        {
-            if (!typeof(IEnumerable).IsAssignableFrom(type)) return false;
-            if (type.IsArray && type.GetArrayRank() == 1) return true;
-            if (!type.IsGenericType) return false;
-            if (type.GetGenericArguments().Length != 1) return false;
-            return typeof(IEnumerable<>).MakeGenericType(type.GetCollectionElementType()).IsAssignableFrom(type);
-        }
 
         public static IEnumerable<Type> GetBaseTypes(this Type type)
         {
             Type currentType = type.BaseType;
-            while (currentType!=typeof(object))
+            while (currentType != typeof(object))
             {
                 yield return currentType;
                 if (currentType == null) break;
                 currentType = currentType.BaseType;
             }
         }
+
+        public static Type GetCollectionElementType(this Type type)
+        {
+            if (type.IsArray) return type.GetElementType();
+            if (!type.IsGenericType) return null;
+            if (type.GetGenericArguments().Length > 1) return null;
+            return type.GetGenericArguments()[0];
+        }
+
+        public static string GetFriendlyName(this Type type)
+        {
+            if (type == typeof(int))
+                return "int";
+            else if (type == typeof(short))
+                return "short";
+            else if (type == typeof(byte))
+                return "byte";
+            else if (type == typeof(bool))
+                return "bool";
+            else if (type == typeof(long))
+                return "long";
+            else if (type == typeof(float))
+                return "float";
+            else if (type == typeof(double))
+                return "double";
+            else if (type == typeof(decimal))
+                return "decimal";
+            else if (type == typeof(string))
+                return "string";
+            else if (type.IsGenericType)
+                return type.Name.Split('`')[0] + "<" + string.Join(", ", type.GetGenericArguments().Select(x => GetFriendlyName(x)).ToArray()) + ">";
+            else
+                return type.Name;
+        }
+
+        public static Type GetGenericClosedTypeOf(this Type type, Type genericTypeDef)
+        {
+            if (!genericTypeDef.IsGenericTypeDefinition)
+                throw new SystemException("It is not generic type  definition");
+            var baseType = type.BaseType;
+            if (baseType == typeof(object) || baseType == null) return null;
+            if (baseType.IsGenericType && baseType.GetGenericTypeDefinition() == genericTypeDef)
+                return baseType;
+            return baseType.GetGenericClosedTypeOf(genericTypeDef);
+        }
         public static TypeInfo GetInfo(this Type type)
         {
             return TypeInfo.GetTypeInfo(type);
         }
 
-
-        public static void SetValue(this object item, string property, object value)
+        public static T GetPathValue<T>(this object item, string path)
         {
-            if (item is IDictionary<string, object> dicObject) // For Dynamic Objects
-            {
-                dicObject[property] = value;
-            } else if(item is IDictionary<string,JToken> tokenDic)
-            {
-                tokenDic[property] =value is JToken tokenValue?tokenValue:JToken.FromObject(value);
-
-            } else
-            {
-                var info = item.GetType().GetInfo()[property];
-                if (info.IsNull()) return;
-                info.SetValue(item, value);
-            }
-            
+            var value = item.GetPathValue(path);
+            if (value == null) return default;
+            return value.As<T>();
         }
-        public static object GetPropValue(this object item,string property)
+
+        public static object GetPathValue(this object item, string path)
+        {
+            if (item == null) return default;
+            var left = path.TrimThenBy(".");
+            var leftValue = item.GetPropValue<object>(left);
+            if (leftValue == null) return default;
+            if (left == path)
+            {
+                return leftValue;
+            }
+            var right = path.TrimLeftBy(".");
+            return leftValue.GetPathValue(right);
+        }
+
+        public static PropertyInfo[] GetPropertyInfos(this Type type, string propName)
+        {
+            List<PropertyInfo> result = new List<PropertyInfo>();
+            PropertyInfo curInfo = null;
+            foreach (var name in propName.Split(PROP_SPLITTER, StringSplitOptions.RemoveEmptyEntries))
+            {
+                curInfo = curInfo == null ? type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance) :
+                    curInfo.PropertyType.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
+                if (curInfo == null) return null;
+                result.Add(curInfo);
+            }
+            return result.Count == 0 ? null : result.ToArray();
+        }
+        public static object GetPropValue(this object item, string property)
         {
             object value = null;
             if (item is IDictionary<string, object> dicObject) // For Dynamic Objects
@@ -252,6 +242,7 @@ namespace Net.Reflection
             }
             return value;
         }
+
         public static T GetPropValue<T>(this object item, string property)
         {
             var value = item.GetPropValue(property);
@@ -259,68 +250,104 @@ namespace Net.Reflection
             if (value is T tvalue) return tvalue;
             return value.Serialize().Deserialize<T>();
         }
-        public static T GetPathValue<T>(this object item, string path)
+
+        public static PropertyInfo GetSubProperty(this Type type, string propName)
         {
-            var value = item.GetPathValue(path);
-            if (value == null) return default;
-            return value.As<T>();
-        }
-        public static object GetPathValue(this object item, string path)
-        {
-            if (item == null) return default;
-            var left = path.TrimThenBy(".");
-            var leftValue = item.GetPropValue<object>(left);
-            if (leftValue == null) return default;
-            if (left == path)
+            PropertyInfo curInfo = null;
+            foreach (var name in propName.Split(PROP_SPLITTER, StringSplitOptions.RemoveEmptyEntries))
             {
-                return leftValue;
+                curInfo = curInfo == null ? type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance) :
+                    curInfo.PropertyType.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
+                if (curInfo == null) return null;
             }
-            var right = path.TrimLeftBy(".");
-            return leftValue.GetPathValue(right);
+            return curInfo;
         }
-        public static void SetPathValue(this object item, string path,object value)
+
+        public static TypeKind GetTypeKind(this Type type)
+        {
+            if (type.Name.Contains("AnonymousType")) return TypeKind.Complex;
+            if (type.IsPrimitiveType()) return TypeKind.Primitive;
+            if (type.IsCollectionType()) return TypeKind.Collection;
+            if (type.IsDictionaryType()) return TypeKind.Dictionary;
+            if (type == typeof(ExpandoObject)) return TypeKind.Dynamic;
+            if (!type.IsGenericTypeDefinition && (type.IsClass || type.IsInterface)) return TypeKind.Complex;
+            return TypeKind.Unknown;
+        }
+
+        public static bool HasInterface(this Type type, Type interfaceType)
+        {
+            if (!interfaceType.IsInterface)
+                throw new SystemException("It is not interface");
+            return type.GetInterfaces()
+                .Any(p =>
+                {
+                    if (p == interfaceType) return true;
+                    if (!interfaceType.IsGenericTypeDefinition) return false;
+                    if (!p.IsGenericType) return false;
+                    return p.GetGenericTypeDefinition() == interfaceType;
+                });
+        }
+
+        public static bool IsAssignableTo<T>(this Type type)
+            => typeof(T).IsAssignableFrom(type);
+
+        public static bool IsNullableOf(this Type nullableType, Type type)
+                                    => nullableType.IsGenericType && Nullable.GetUnderlyingType(nullableType) == type;
+        public static void SetPathValue(this object item, string path, object value)
         {
             if (item == null) return;
             var left = path.TrimThenBy(".");
-            if (left == path) {
+            if (left == path)
+            {
                 item.SetValue(left, value);
                 return;
             }
             var leftValue = item.GetPropValue<object>(left);
             if (leftValue == null) return;
             var right = path.TrimLeftBy(".");
-            leftValue.SetPathValue(right,value);
+            leftValue.SetPathValue(right, value);
         }
-        public static T As<T>(this object item)
+
+        public static void SetValue(this object item, string property, object value)
         {
-            if (item.IsNull()) return default;
-            if (item is T titem) return titem;
-            return item.Serialize().Deserialize<T>();
-        }
-        public static T AsCloned<T>(this object item)
-        {
-            if(item.IsNull()) return default;
-            return item.Serialize().Deserialize<T>();
-        }
-        
-        public static object AsCloned(this object item,Type type=default)
-        {
-            if (item.IsNull()) return default;
-            if (type == null)
+            if (item is IDictionary<string, object> dicObject) // For Dynamic Objects
             {
-                if (item is IProxyData)
-                    type = InterfaceType.GetIntefaceTypeOfProxy(item);
-                else
-                    type=item.GetType();
+                dicObject[property] = value;
+            }
+            else if (item is IDictionary<string, JToken> tokenDic)
+            {
+                tokenDic[property] = value is JToken tokenValue ? tokenValue : JToken.FromObject(value);
+
+            }
+            else
+            {
+                var info = item.GetType().GetInfo()[property];
+                if (info.IsNull()) return;
+                info.SetValue(item, value);
             }
 
-            return item.Serialize().Deserialize(type);
         }
-        public static object As(this object item,Type asType)
+
+        internal static bool IsCollectionType(this Type type)
         {
-            if (item.IsNull()) return default;
-            if (asType.IsAssignableFrom(item.GetType())) return item;
-            return item.Serialize().Deserialize(asType);
+            if (!typeof(IEnumerable).IsAssignableFrom(type)) return false;
+            if (type.IsArray && type.GetArrayRank() == 1) return true;
+            if (!type.IsGenericType) return false;
+            if (type.GetGenericArguments().Length != 1) return false;
+            return typeof(IEnumerable<>).MakeGenericType(type.GetCollectionElementType()).IsAssignableFrom(type);
         }
+
+        internal static bool IsDictionaryType(this Type type)
+        {
+            if (!typeof(IDictionary).IsAssignableFrom(type)) return false;
+            var genericDef = type.GetGenericTypeDefinition();
+            if (genericDef == typeof(Dictionary<,>)) return true;
+            var genericArgs = type.GetGenericArguments();
+            if (genericArgs.Length != 2) return false;
+            return genericArgs[0].IsPrimitiveType();
+        }
+
+        internal static bool IsPrimitiveType(this Type type)
+                                            => primitiveTypes.Contains(type) || type.IsEnum;
     }
 }

@@ -10,3 +10,4 @@ C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\Net.All
 C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\refint\Net.All.dll
 C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\Net.All.pdb
 C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\ref\Net.All.dll
+C:\Users\keles\OneDrive\Belgeler\GitHub\net.all\Net.All\obj\Debug\net8.0\Net.All.sourcelink.json

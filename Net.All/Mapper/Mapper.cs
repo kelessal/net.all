@@ -1,7 +1,12 @@
-﻿using Net.Proxy;
+﻿using Net.All.Mapper;
+using Net.Proxy;
 using Net.Reflection;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Dynamic;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Net.Mapper
 {
@@ -13,7 +18,7 @@ namespace Net.Mapper
         private Delegate CompiledDelegate;
         public object Map(object instance)
         {
-            if (!this.CanMappable) throw new NotSupportedException($"{this.TypePair} is not mappable");
+            if (!this.CanMappable) return default;
             if(this.CompiledDelegate == null)
             {
                 this.CompiledDelegate = this.LambdaExpression.Compile();
@@ -26,12 +31,33 @@ namespace Net.Mapper
 
             this.TypePair = new TypePair(pair.SrcType, pair.DestType.IsInterface ?
                 InterfaceType.GetProxyType(pair.DestType): pair.DestType);
-            this.CanMappable = pair.SrcType.IsMappableOf(this.TypePair.DestType);
+            this.CanMappable =this.IsMappableOf(this.TypePair.SrcType,this.TypePair.DestType);
             if (!this.CanMappable)  return;
             this.LambdaExpression = CreateExpression();
         }
-        
-       
+        internal bool IsMappableOf(Type source, Type dest)
+        {
+            if (source == dest) return true;
+            var srcInfo = source.GetInfo();
+            var destInfo = dest.GetInfo();
+            if (srcInfo.Kind == destInfo.Kind) return true;
+            if (srcInfo.Kind == TypeKind.Complex)
+            {
+                if (destInfo.Kind == TypeKind.Dynamic) return true;
+                if (destInfo.Kind == TypeKind.Dictionary && destInfo.Type == typeof(Dictionary<string, object>)) return true;
+                return false;
+            }
+            if (srcInfo.Kind == TypeKind.Dictionary)
+            {
+                if (destInfo.Kind == TypeKind.Complex) return true;
+                if (destInfo.Kind == TypeKind.Dynamic) return true;
+                return false;
+            }
+           
+            return srcInfo.Kind != TypeKind.Unknown;
+
+        }
+
         internal Mapper(TypePair pair,LambdaExpression expression)
         {
             this.TypePair = pair;
@@ -41,9 +67,10 @@ namespace Net.Mapper
 
         private LambdaExpression CreateExpression()
         {
+            if (!this.CanMappable) return default;
             var typeKind = this.TypePair.SrcType.GetTypeKind();
-            if (this.TypePair.IsSameTypes)
-               return PrimitiveMapExpressionBuilder.Create(this.TypePair);
+            //if (this.TypePair.IsSameTypes)
+            //   return PrimitiveMapExpressionBuilder.Create(this.TypePair);
             switch (typeKind)
             {
                 case TypeKind.Primitive:
@@ -52,6 +79,8 @@ namespace Net.Mapper
                    return ComplexMapExpressionBuilder.Create(this.TypePair);
                 case TypeKind.Collection:
                   return CollectionMapExpressionBuilder.Create(this.TypePair);
+                case TypeKind.Dictionary:
+                    return DictionaryMapExpressionBuilder.Create(this.TypePair);
                 default:
                     return null;
             }

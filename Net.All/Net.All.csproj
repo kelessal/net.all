@@ -3,7 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <IsPublishable>True</IsPublishable>
-    <PackageProjectUrl>https://github.com/kelessal/net.all</PackageProjectUrl>
+	  <Version>2.0</Version>
+	  <PackageProjectUrl>https://github.com/kelessal/net.all</PackageProjectUrl>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

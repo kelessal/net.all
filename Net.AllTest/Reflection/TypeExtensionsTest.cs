@@ -1,6 +1,9 @@
 ﻿using Net.Extensions;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Dynamic;
 using Xunit;
 
 namespace Net.Reflection.Test
@@ -71,12 +74,72 @@ namespace Net.Reflection.Test
             var x = item.As<JObject>();
             var result=x.GetPropValue("name");
         }
+       
+        [Fact]
+        public void AsCloned2PerfomenceTest()
+        {
+            var testObj = this.CreateTestObject();
+            var item = testObj.AsCloned<TestInterface>();
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < 1000; i++)
+            {
+                var item2 = testObj.AsCloned<TestInterface>();
+            }
+            sw.Stop();
+            var elapsed = sw.ElapsedMilliseconds;
+
+        }
+
         [Fact]
         public void CamelCaseTest()
         {
             var item = new TestObject();
             var type=item.GetType().GetInfo();
             var prop = type.GetPropertyByPath("nto.propA");
+        }
+        int index;
+        TestObject CreateTestObject()
+        {
+            var result=new TestObject();
+            var typeInfo=typeof(TestObject).GetInfo();
+            var list=new List<int>();  
+           for(var i = 0; i < 100; i++)
+            {
+                list.Add(index++);
+            }
+            result.List = list.ToArray();
+            foreach(var prop in typeInfo.GetAllProperties())
+            {
+                if (prop.Name.StartsWith("Name"))
+                    prop.SetValue(result, (index++).ToString());
+                else if (prop.Name.StartsWith("Age"))
+                    prop.SetValue(result, index++);
+                else if (prop.Name == "NTO")
+                    prop.SetValue(result, CreateNestedTestObject());
+                else if (prop.Name == "NTODic")
+                {
+                    var dic = new Dictionary<string, NestedTestObject>();
+                    for(int i = 0; i < 1000; i++)
+                    {
+                        dic[i.ToString()] = CreateNestedTestObject();
+                    }
+                    prop.SetValue(result, dic);
+                }
+            }
+            return result;
+        }
+        NestedTestObject CreateNestedTestObject()
+        {
+            var result = new NestedTestObject();
+            var typeInfo = typeof(NestedTestObject).GetInfo();
+            foreach (var prop in typeInfo.GetAllProperties())
+            {
+                if (prop.Name.StartsWith("Name"))
+                    prop.SetValue(result, (index++).ToString());
+                else if (prop.Name.StartsWith("Age"))
+                    prop.SetValue(result, index++);
+            }
+            return result;
         }
     }
 }

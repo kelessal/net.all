@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "Kd3aj03P6wCoLYnDMkDc8dXTEKbmvL7g25r3ZthFdB+RWES/J8FrRvrno5yI+j6deeUf0g1i5xLBXeFO58D1wA==",
+  "dgSpecHash": "4RZf0IQw1KeeiwiARC+qnL2VsrCWAH0gBMJfU6+xSb+L8Th0xWBxg82gNvsh/QF9VnU7aNex+JyakazAgVpsGA==",
   "success": true,
   "projectFilePath": "C:\\Users\\keles\\OneDrive\\Belgeler\\GitHub\\net.all\\Net.AllTest\\Net.AllTest.csproj",
   "expectedPackageFiles": [
@@ -25,8 +25,7 @@
     "C:\\Users\\keles\\.nuget\\packages\\xunit.core\\2.4.0\\xunit.core.2.4.0.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\xunit.extensibility.core\\2.4.0\\xunit.extensibility.core.2.4.0.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\xunit.extensibility.execution\\2.4.0\\xunit.extensibility.execution.2.4.0.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\xunit.runner.visualstudio\\2.4.0\\xunit.runner.visualstudio.2.4.0.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\net.all\\1.0.0\\net.all.1.0.0.nupkg.sha512"
+    "C:\\Users\\keles\\.nuget\\packages\\xunit.runner.visualstudio\\2.4.0\\xunit.runner.visualstudio.2.4.0.nupkg.sha512"
   ],
   "logs": []
 }
