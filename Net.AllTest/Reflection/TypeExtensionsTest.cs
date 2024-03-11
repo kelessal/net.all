@@ -1,4 +1,5 @@
 ﻿using Net.Extensions;
+using Net.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,8 @@ namespace Net.Reflection.Test
         [Fact]
         public void LogicalEqualTest()
         {
+            var x =new { a = 3 };
+            var y = JToken.Parse(x.Serialize());
             var obj1 = new
             {
                 Name = "hello",
@@ -79,11 +82,13 @@ namespace Net.Reflection.Test
         public void AsCloned2PerfomenceTest()
         {
             var testObj = this.CreateTestObject();
-            var item = testObj.AsCloned<TestInterface>();
+            var small=testObj.AsCloned<TestSmallObject>();
+            var jobj = JToken.Parse(small.Serialize());
+            var item = jobj.AsCloned<ExpandoObject>();
             var sw = Stopwatch.StartNew();
             for (int i = 0; i < 1000; i++)
             {
-                var item2 = testObj.AsCloned<TestInterface>();
+                var item2 = jobj.AsCloned<TestInterface>();
             }
             sw.Stop();
             var elapsed = sw.ElapsedMilliseconds;

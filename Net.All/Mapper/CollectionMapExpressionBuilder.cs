@@ -6,11 +6,17 @@ using System.Reflection;
 using Net.Extensions;
 using Net.Reflection;
 using System;
+using Newtonsoft.Json.Linq;
 
 namespace Net.Mapper
 {
     static class CollectionMapExpressionBuilder
     {
+        static TDest MapJson<TSrc, TDest>(JArray json)
+        {
+            if (json == null) return default;
+            return json.ToObject<TDest>();
+        }
         static List<TDest> MapToList<TSrc, TDest>(IEnumerable<TSrc> src)
         {
             if (src == null) return null;
@@ -32,6 +38,13 @@ namespace Net.Mapper
             var parameter = Expression.Parameter(pair.SrcType,pair.SrcType.Name.ToLowerInvariant());
             var srcInfo = pair.SrcType.GetInfo();
             var destInfo = pair.DestType.GetInfo();
+            if(srcInfo.Type==typeof(JArray))
+            {
+                var mi = typeof(CollectionMapExpressionBuilder).GetMethod(nameof(MapJson), BindingFlags.NonPublic | BindingFlags.Static);
+                var gmi = mi.MakeGenericMethod(new[] {  destInfo.Type });
+                var callExp = Expression.Call(null, gmi, parameter);
+                return Expression.Lambda(callExp, parameter);
+            }
             if (destInfo.Type.IsArray)
             {
                 var mi = typeof(CollectionMapExpressionBuilder).GetMethod(nameof(MapToArray), BindingFlags.NonPublic | BindingFlags.Static);

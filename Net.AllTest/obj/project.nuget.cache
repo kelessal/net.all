@@ -1,23 +1,23 @@
 {
   "version": 2,
-  "dgSpecHash": "4RZf0IQw1KeeiwiARC+qnL2VsrCWAH0gBMJfU6+xSb+L8Th0xWBxg82gNvsh/QF9VnU7aNex+JyakazAgVpsGA==",
+  "dgSpecHash": "ACFxsQ3qEDvkz8A+kxC45uA4HmEkGjttNymKk1aWnUdBIhjkOb+ZNyAelsw78mA1EaIHrri9N1kwOoi48hmjHg==",
   "success": true,
   "projectFilePath": "C:\\Users\\keles\\OneDrive\\Belgeler\\GitHub\\net.all\\Net.AllTest\\Net.AllTest.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\keles\\.nuget\\packages\\combinatorics\\2.0.0\\combinatorics.2.0.0.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\coverlet.collector\\1.2.0\\coverlet.collector.1.2.0.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\microsoft.codecoverage\\16.5.0\\microsoft.codecoverage.16.5.0.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.abstractions\\7.2.0\\microsoft.identitymodel.abstractions.7.2.0.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\7.2.0\\microsoft.identitymodel.jsonwebtokens.7.2.0.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.logging\\7.2.0\\microsoft.identitymodel.logging.7.2.0.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.tokens\\7.2.0\\microsoft.identitymodel.tokens.7.2.0.nupkg.sha512",
+    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.abstractions\\7.4.0\\microsoft.identitymodel.abstractions.7.4.0.nupkg.sha512",
+    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\7.4.0\\microsoft.identitymodel.jsonwebtokens.7.4.0.nupkg.sha512",
+    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.logging\\7.4.0\\microsoft.identitymodel.logging.7.4.0.nupkg.sha512",
+    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.tokens\\7.4.0\\microsoft.identitymodel.tokens.7.4.0.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\microsoft.net.test.sdk\\16.5.0\\microsoft.net.test.sdk.16.5.0.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\microsoft.testplatform.objectmodel\\16.5.0\\microsoft.testplatform.objectmodel.16.5.0.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\microsoft.testplatform.testhost\\16.5.0\\microsoft.testplatform.testhost.16.5.0.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\nuget.frameworks\\5.0.0\\nuget.frameworks.5.0.0.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\serialize.linq\\3.0.148\\serialize.linq.3.0.148.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.2.0\\system.identitymodel.tokens.jwt.7.2.0.nupkg.sha512",
+    "C:\\Users\\keles\\.nuget\\packages\\serialize.linq\\3.0.152\\serialize.linq.3.0.152.nupkg.sha512",
+    "C:\\Users\\keles\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.4.0\\system.identitymodel.tokens.jwt.7.4.0.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\xunit\\2.4.0\\xunit.2.4.0.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\xunit.abstractions\\2.0.2\\xunit.abstractions.2.0.2.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\xunit.analyzers\\0.10.0\\xunit.analyzers.0.10.0.nupkg.sha512",
@@ -25,7 +25,8 @@
     "C:\\Users\\keles\\.nuget\\packages\\xunit.core\\2.4.0\\xunit.core.2.4.0.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\xunit.extensibility.core\\2.4.0\\xunit.extensibility.core.2.4.0.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\xunit.extensibility.execution\\2.4.0\\xunit.extensibility.execution.2.4.0.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\xunit.runner.visualstudio\\2.4.0\\xunit.runner.visualstudio.2.4.0.nupkg.sha512"
+    "C:\\Users\\keles\\.nuget\\packages\\xunit.runner.visualstudio\\2.4.0\\xunit.runner.visualstudio.2.4.0.nupkg.sha512",
+    "C:\\Users\\keles\\.nuget\\packages\\net.all\\2.0.0\\net.all.2.0.0.nupkg.sha512"
   ],
   "logs": []
 }

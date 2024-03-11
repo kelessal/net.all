@@ -1,17 +1,17 @@
 {
   "version": 2,
-  "dgSpecHash": "8w4x9ezcT4im5sGoxIjV5dV9UMKYBSebte2ftNKoxPqpW/AxjfDYpZHWt0Ly9ps46+F439ZHxCNOjXzzvu2xGQ==",
+  "dgSpecHash": "dYJqcxTI6OSPLNzsMl8rAnoG1mql6v2g5e275TDufFSzrDeGHCK5AGGd3U0+EPvAfro91l0V9F7cHS0HJkKx4A==",
   "success": true,
   "projectFilePath": "C:\\Users\\keles\\OneDrive\\Belgeler\\GitHub\\net.all\\Net.All\\Net.All.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\keles\\.nuget\\packages\\combinatorics\\2.0.0\\combinatorics.2.0.0.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.abstractions\\7.2.0\\microsoft.identitymodel.abstractions.7.2.0.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\7.2.0\\microsoft.identitymodel.jsonwebtokens.7.2.0.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.logging\\7.2.0\\microsoft.identitymodel.logging.7.2.0.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.tokens\\7.2.0\\microsoft.identitymodel.tokens.7.2.0.nupkg.sha512",
+    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.abstractions\\7.4.0\\microsoft.identitymodel.abstractions.7.4.0.nupkg.sha512",
+    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\7.4.0\\microsoft.identitymodel.jsonwebtokens.7.4.0.nupkg.sha512",
+    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.logging\\7.4.0\\microsoft.identitymodel.logging.7.4.0.nupkg.sha512",
+    "C:\\Users\\keles\\.nuget\\packages\\microsoft.identitymodel.tokens\\7.4.0\\microsoft.identitymodel.tokens.7.4.0.nupkg.sha512",
     "C:\\Users\\keles\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\serialize.linq\\3.0.148\\serialize.linq.3.0.148.nupkg.sha512",
-    "C:\\Users\\keles\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.2.0\\system.identitymodel.tokens.jwt.7.2.0.nupkg.sha512"
+    "C:\\Users\\keles\\.nuget\\packages\\serialize.linq\\3.0.152\\serialize.linq.3.0.152.nupkg.sha512",
+    "C:\\Users\\keles\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.4.0\\system.identitymodel.tokens.jwt.7.4.0.nupkg.sha512"
   ],
   "logs": []
 }

@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -37,9 +38,10 @@ namespace Net.Reflection
             typeof(DateTime?),
             typeof(bool),
             typeof(bool?),
-            //typeof(TimeSpan),
-            //typeof(TimeSpan?),
-            typeof(byte)
+            typeof(TimeSpan),
+            typeof(TimeSpan?),
+            typeof(byte),
+            typeof(JValue)
         });
 
         static readonly char[] PROP_SPLITTER = new char[] { '.' };
@@ -69,12 +71,12 @@ namespace Net.Reflection
                     type = item.GetType();
             }
 
-            return item.ObjectMap(type);
+            var mapper = new TypePair(item.GetType(), type).GetMapper();
+            return mapper.Map(item);
         }
         public static T AsCloned<T>(this object item)
         {
-            if (item.IsNull()) return default;
-            return (T)item.ObjectMap(typeof(T));
+            return (T) item.AsCloned(typeof(T));
         }
 
         public static MethodInfo FindMethod(this Type type, string methodName, Func<MethodInfo, bool> finder, params Type[] genericParameters)
@@ -330,6 +332,7 @@ namespace Net.Reflection
 
         internal static bool IsCollectionType(this Type type)
         {
+            if (type == typeof(JArray)) return true;
             if (!typeof(IEnumerable).IsAssignableFrom(type)) return false;
             if (type.IsArray && type.GetArrayRank() == 1) return true;
             if (!type.IsGenericType) return false;

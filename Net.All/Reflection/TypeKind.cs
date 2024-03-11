@@ -7,6 +7,6 @@
         Complex,
         Collection,
         Dictionary,
-        Dynamic
+        Dynamic,
     }
 }

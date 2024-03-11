@@ -1,11 +1,14 @@
 ﻿using Net.All.Mapper;
+using Net.Json;
 using Net.Proxy;
 using Net.Reflection;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq.Expressions;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 
 namespace Net.Mapper
@@ -18,12 +21,14 @@ namespace Net.Mapper
         private Delegate CompiledDelegate;
         public object Map(object instance)
         {
+            if (instance == null) return default;
             if (!this.CanMappable) return default;
-            if(this.CompiledDelegate == null)
+            if (this.CompiledDelegate == null)
             {
                 this.CompiledDelegate = this.LambdaExpression.Compile();
             }
             return this.CompiledDelegate.DynamicInvoke(instance);
+           
         }
         public bool CanMappable { get; private set; }
         internal Mapper(TypePair pair)
@@ -31,6 +36,7 @@ namespace Net.Mapper
 
             this.TypePair = new TypePair(pair.SrcType, pair.DestType.IsInterface ?
                 InterfaceType.GetProxyType(pair.DestType): pair.DestType);
+
             this.CanMappable =this.IsMappableOf(this.TypePair.SrcType,this.TypePair.DestType);
             if (!this.CanMappable)  return;
             this.LambdaExpression = CreateExpression();
@@ -43,17 +49,32 @@ namespace Net.Mapper
             if (srcInfo.Kind == destInfo.Kind) return true;
             if (srcInfo.Kind == TypeKind.Complex)
             {
+                if (destInfo.Type == typeof(JObject)) return true;
                 if (destInfo.Kind == TypeKind.Dynamic) return true;
                 if (destInfo.Kind == TypeKind.Dictionary && destInfo.Type == typeof(Dictionary<string, object>)) return true;
                 return false;
             }
+            if (srcInfo.Kind == TypeKind.Collection)
+            {
+                if (destInfo.Type == typeof(JArray)) return true;
+                return destInfo.Kind == TypeKind.Collection;
+            }
             if (srcInfo.Kind == TypeKind.Dictionary)
             {
+                if(destInfo.Type==typeof(JObject)) return true; 
                 if (destInfo.Kind == TypeKind.Complex) return true;
                 if (destInfo.Kind == TypeKind.Dynamic) return true;
                 return false;
             }
-           
+            if(srcInfo.Kind == TypeKind.Dynamic)
+            {
+                if(destInfo.Type==typeof(JObject)) return true;
+                if(destInfo.Kind==TypeKind.Complex) return true;
+                if (destInfo.Kind == TypeKind.Dictionary && destInfo.Type == typeof(Dictionary<string, object>)) return true;
+                return false;
+            }
+            
+
             return srcInfo.Kind != TypeKind.Unknown;
 
         }
@@ -81,6 +102,8 @@ namespace Net.Mapper
                   return CollectionMapExpressionBuilder.Create(this.TypePair);
                 case TypeKind.Dictionary:
                     return DictionaryMapExpressionBuilder.Create(this.TypePair);
+                case TypeKind.Dynamic:
+                    return DynamicMapExpressionBuilder.Create(this.TypePair);
                 default:
                     return null;
             }
