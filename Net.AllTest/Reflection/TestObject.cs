@@ -7,7 +7,7 @@ namespace Net.Reflection.Test
 {
     public enum TestEnum
     {
-        A=0, B=1, C=2, D=3, E=24, F=25, G=26,
+        A=0, B=1, C=2, D=3, E=24, F=25, G=26,H=125
 
     }
     class TestObject
@@ -130,6 +130,7 @@ namespace Net.Reflection.Test
     }
     class TestSmallObject
     {
+        public TestEnum Age1 { get; set; }
         public string Name0 { get; set; }
         public int Age0 { get; set;}
         //public Dictionary<int,NestedTestSmallObject> NTODic { get; private set; }

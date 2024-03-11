@@ -84,7 +84,7 @@ namespace Net.Reflection.Test
             var testObj = this.CreateTestObject();
             var small=testObj.AsCloned<TestSmallObject>();
             var jobj = JToken.Parse(small.Serialize());
-            var item = jobj.AsCloned<ExpandoObject>();
+            var item = jobj.AsCloned<TestSmallObject>();
             var sw = Stopwatch.StartNew();
             for (int i = 0; i < 1000; i++)
             {
