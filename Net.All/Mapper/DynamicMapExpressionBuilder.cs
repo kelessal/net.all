@@ -1,6 +1,7 @@
 ﻿using Net.All.Mapper;
 using Net.Expressions;
 using Net.Extensions;
+using Net.Proxy;
 using Net.Reflection;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace Net.Mapper
 {
     static class DynamicMapExpressionBuilder
     {
+      
         static Dictionary<string,object> MapToDictionary(ExpandoObject src)
         {
             if (src == null) return default;

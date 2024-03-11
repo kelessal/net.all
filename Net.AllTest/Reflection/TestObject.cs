@@ -12,7 +12,7 @@ namespace Net.Reflection.Test
     }
     class TestObject
     {
-        public int[] List { get; set; }
+        public IList<NestedTestObject> List { get; set; }
         public string Name0 { get; set; }
         public string Name1 { get; set; }
         public string Name2 { get; set; }
@@ -121,7 +121,7 @@ namespace Net.Reflection.Test
     }
     public interface TestInterface
     {
-        public List<TestEnum> List { get; set; }
+        public IList<NestedTestObject> List { get; set; }
         public string Name0 { get; set; }
         public int Age0 { get; set; }
         public TestEnum Age1 { get; set; }
@@ -130,6 +130,7 @@ namespace Net.Reflection.Test
     }
     class TestSmallObject
     {
+        public IList<object> List { get; set; }
         public TestEnum Age1 { get; set; }
         public string Name0 { get; set; }
         public int Age0 { get; set;}

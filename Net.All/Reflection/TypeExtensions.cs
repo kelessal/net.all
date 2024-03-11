@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -76,7 +77,9 @@ namespace Net.Reflection
         }
         public static T AsCloned<T>(this object item)
         {
-            return (T) item.AsCloned(typeof(T));
+            var result= item.AsCloned(typeof(T));
+            if (result == null) return default;
+            return (T) result;
         }
 
         public static MethodInfo FindMethod(this Type type, string methodName, Func<MethodInfo, bool> finder, params Type[] genericParameters)

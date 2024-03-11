@@ -1,9 +1,11 @@
 ﻿using Net.Extensions;
 using Net.Reflection;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -13,22 +15,11 @@ namespace Net.Mapper
     public static class MappingExtensions
     {
         readonly static ConcurrentDictionary<TypePair, Mapper> Mappers = new ConcurrentDictionary<TypePair, Mapper>();
-        readonly static ConcurrentDictionary<TypePair, object> Locks = new ConcurrentDictionary<TypePair, object>();
-        internal static bool HasLock(TypePair pair) => Locks.ContainsKey(pair);
         public static Mapper GetMapper(this Type srcType, Type destType)
             => GetMapper(new TypePair(srcType, destType));
         public static Mapper GetMapper(this TypePair pair)
         {
-            if (Mappers.ContainsKey(pair)) return Mappers[pair];
-            var locker = Locks.GetOrAdd(pair, new object());
-            lock (locker)
-            {
-                if (Mappers.ContainsKey(pair)) return Mappers[pair];
-                var mapper = new Mapper(pair);
-                Mappers[pair] = mapper;
-                Locks.TryRemove(pair, out object existing);
-                return mapper;
-            }
+           return Mappers.GetOrAdd(pair,new Mapper(pair));
         }
         public static void RegisterMapper<TSource, TDestination>(Expression<Func<TSource, TDestination>> mapper)
         {

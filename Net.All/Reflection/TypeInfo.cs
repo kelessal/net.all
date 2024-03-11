@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Net.Extensions;
+using Newtonsoft.Json.Linq;
 namespace Net.Reflection
 {
     public class TypeInfo
@@ -83,7 +85,7 @@ namespace Net.Reflection
                 info.Kind = info.Type.GetTypeKind();
                 if (info.Kind == TypeKind.Complex)
                     info.ParseProperties(workingInfos);
-                else if (info.Kind == TypeKind.Collection)
+                else if (info.Kind == TypeKind.Collection && type!=typeof(JArray))
                     info.ElementTypeInfo = GetTypeInfo(info.Type.GetCollectionElementType(), workingInfos);
                 _objectInfos[type] = info;
                 void IncludeInterfaces(Type currentType)

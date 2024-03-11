@@ -4,12 +4,11 @@ using Net.Proxy;
 using Net.Reflection;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq.Expressions;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
 
 namespace Net.Mapper
 {
@@ -27,15 +26,29 @@ namespace Net.Mapper
             {
                 this.CompiledDelegate = this.LambdaExpression.Compile();
             }
+            try
+            {
+
             return this.CompiledDelegate.DynamicInvoke(instance);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
            
         }
         public bool CanMappable { get; private set; }
+
+        Type GetInterfaceType(Type type)
+        {
+            if (type.IsGenericType && type.IsAssignableTo(typeof(IEnumerable))) return typeof(List<>).MakeGenericType(type.GetGenericArguments()[0]);
+            return InterfaceType.GetProxyType(type);
+        }
         internal Mapper(TypePair pair)
         {
 
             this.TypePair = new TypePair(pair.SrcType, pair.DestType.IsInterface ?
-                InterfaceType.GetProxyType(pair.DestType): pair.DestType);
+                GetInterfaceType(pair.DestType): pair.DestType);
 
             this.CanMappable =this.IsMappableOf(this.TypePair.SrcType,this.TypePair.DestType);
             if (!this.CanMappable)  return;

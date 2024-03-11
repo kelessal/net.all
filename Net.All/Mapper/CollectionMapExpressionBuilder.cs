@@ -12,10 +12,30 @@ namespace Net.Mapper
 {
     static class CollectionMapExpressionBuilder
     {
-        static TDest MapJson<TSrc, TDest>(JArray json)
+        static TDest[] MapJArrayToArray<TDest>(JArray json)
+        {
+           return MapJArrayToList<TDest>(json)?.ToArray(); 
+        }
+        static HashSet<TDest> MapJArrayToHashSet<TDest>(JArray json)
+        {
+            return MapJArrayToList<TDest>(json)?.ToHashSet();
+        }
+        static JArray MapJArrayToJArray<TDest>(JArray json)
         {
             if (json == null) return default;
-            return json.ToObject<TDest>();
+            var result = new JArray(json);
+            return result;
+        }
+        static List<TDest> MapJArrayToList<TDest>(JArray json)
+        {
+            if (json == null) return default;
+            var result =new List<TDest>();
+            if (json.IsEmpty()) return result;
+            foreach(var item in json) 
+            { 
+                result.Add(item.AsCloned<TDest>());
+            }
+            return result; 
         }
         static List<TDest> MapToList<TSrc, TDest>(IEnumerable<TSrc> src)
         {
@@ -32,7 +52,10 @@ namespace Net.Mapper
         {
             return MapToList<TSrc,TDest>(src)?.ToArray();
         }
-
+        static HashSet<TDest> MapToHashSet<TSrc, TDest>(IEnumerable<TSrc> src)
+        {
+            return MapToList<TSrc, TDest>(src)?.ToHashSet();
+        }
         public static LambdaExpression Create(TypePair pair)
         {
             var parameter = Expression.Parameter(pair.SrcType,pair.SrcType.Name.ToLowerInvariant());
@@ -40,27 +63,45 @@ namespace Net.Mapper
             var destInfo = pair.DestType.GetInfo();
             if(srcInfo.Type==typeof(JArray))
             {
-                var mi = typeof(CollectionMapExpressionBuilder).GetMethod(nameof(MapJson), BindingFlags.NonPublic | BindingFlags.Static);
-                var gmi = mi.MakeGenericMethod(new[] {  destInfo.Type });
-                var callExp = Expression.Call(null, gmi, parameter);
-                return Expression.Lambda(callExp, parameter);
-            }
-            if (destInfo.Type.IsArray)
-            {
-                var mi = typeof(CollectionMapExpressionBuilder).GetMethod(nameof(MapToArray), BindingFlags.NonPublic | BindingFlags.Static);
-                var gmi = mi.MakeGenericMethod(new[] { srcInfo.ElementTypeInfo.Type, destInfo.ElementTypeInfo.Type });
-                var callExp = Expression.Call(null, gmi, parameter);
-                return Expression.Lambda(callExp, parameter);
-            }
-            else if (destInfo.Type == typeof(List<>).MakeGenericType(destInfo.ElementTypeInfo.Type) || destInfo.Type == typeof(IEnumerable<>).MakeGenericType(destInfo.ElementTypeInfo.Type))
-            {
-                var mi = typeof(CollectionMapExpressionBuilder).GetMethod(nameof(MapToList), BindingFlags.NonPublic | BindingFlags.Static);
-                var gmi = mi.MakeGenericMethod(new[] { srcInfo.ElementTypeInfo.Type, destInfo.ElementTypeInfo.Type });
-                var callExp = Expression.Call(null, gmi, parameter);
-                return Expression.Lambda(callExp, parameter);
+                if (destInfo.Type == typeof(JArray))
+                {
+                    var mi = typeof(CollectionMapExpressionBuilder).GetMethod(nameof(MapJArrayToJArray), BindingFlags.NonPublic | BindingFlags.Static);
+                    var callExp = Expression.Call(null, mi, parameter);
+                    return Expression.Lambda(callExp, parameter);
+                }
+                else if (!destInfo.ElementTypeInfo.IsNull())
+                {
+                    var methodName = "";
+                    if (destInfo.Type.IsArray)
+                        methodName = nameof(MapJArrayToArray);
+                    else if (destInfo.Type == typeof(HashSet<>).MakeGenericType(destInfo.ElementTypeInfo.Type))
+                        methodName = nameof(MapJArrayToHashSet);
+                    else
+                        methodName = nameof(MapJArrayToList);
+                    
+                    var mi = typeof(CollectionMapExpressionBuilder).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
+                    var gmi = mi.MakeGenericMethod(new[] { destInfo.ElementTypeInfo.Type });
+                    var callExp = Expression.Call(null, gmi, parameter);
+                    return Expression.Lambda(callExp, parameter);
+                    
+                }
+                else throw new NotImplementedException("Mapping is not available");
             }
             else
-                throw new NotImplementedException("Mapping is not available");
+            {
+                var methodName = "";
+                if (destInfo.Type.IsArray)
+                    methodName = nameof(MapToArray);
+                else if (destInfo.Type == typeof(HashSet<>).MakeGenericType(destInfo.ElementTypeInfo.Type))
+                    methodName = nameof(MapToHashSet);
+                else
+                    methodName = nameof(MapToList);
+                var mi = typeof(CollectionMapExpressionBuilder).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
+                var gmi = mi.MakeGenericMethod(new[] { srcInfo.ElementTypeInfo.Type, destInfo.ElementTypeInfo.Type });
+                var callExp = Expression.Call(null, gmi, parameter);
+                return Expression.Lambda(callExp, parameter);
+
+            }
 
         }
     }

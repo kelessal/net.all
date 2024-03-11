@@ -1,6 +1,7 @@
 ﻿using Net.All.Mapper;
 using Net.Expressions;
 using Net.Extensions;
+using Net.Proxy;
 using Net.Reflection;
 using Newtonsoft.Json.Linq;
 using System;
@@ -15,11 +16,29 @@ namespace Net.Mapper
 {
     static class ComplexMapExpressionBuilder
     {
-        static TDest MapJson<TDest>(JObject jobj)
+      
+        static TDest MapJson<TDest>(JObject jobj, TypePropertyInfo[] mappingProps)
         {
+            
             if (jobj == null) return default;
-            var result= jobj.ToObject<TDest>();
+            var result=Activator.CreateInstance<TDest>();
+            if(mappingProps.IsEmpty()) return result;
+            foreach(var prop in mappingProps )
+            {
+                    
+                var value = jobj.ContainsKey(prop.Name) ? jobj[prop.Name] : jobj[prop.CamelName];
+                prop.SetValue(result, value.AsCloned(prop.Type));
+                   
+            }
             return result;
+            
+        }
+        static ExpandoObject MapJsonToExpando(JObject jobj)
+        {
+
+            if (jobj == null) return default;
+            return jobj.ToObject<ExpandoObject>();
+
         }
         static Dictionary<string,object> MapClassToDictionary<TSrcValue>(TSrcValue src, TypePropertyInfo[] mappingProps)
         {
@@ -65,16 +84,32 @@ namespace Net.Mapper
             var parameter = Expression.Parameter(pair.SrcType, pair.SrcType.Name.ToLowerInvariant());
             var srcInfo = pair.SrcType.GetInfo();
             var destInfo = pair.DestType.GetInfo();
+            
             if (pair.SrcType == typeof(JObject))
             {
-                var mi = typeof(ComplexMapExpressionBuilder).GetMethod(nameof(MapJson), BindingFlags.NonPublic | BindingFlags.Static);
-                var gmi = mi.MakeGenericMethod(new Type[] { destInfo.Type });
-                var callExp = Expression.Call(null, gmi, parameter);
-                return Expression.Lambda(callExp, parameter);
+                if (pair.DestType == typeof(Object))
+                {
+
+                    var mi = typeof(ComplexMapExpressionBuilder).GetMethod(nameof(MapJsonToExpando), BindingFlags.NonPublic | BindingFlags.Static);
+                    var callExp = Expression.Call(null, mi, parameter);
+                    return Expression.Lambda(callExp, parameter);
+                }
+                else
+                {
+                    var mappableDestProps = destInfo.GetAllProperties().Where(p => !p.HasAttribute<NoMapAttribute>()).ToArray();
+
+                    var mi = typeof(ComplexMapExpressionBuilder).GetMethod(nameof(MapJson), BindingFlags.NonPublic | BindingFlags.Static);
+                    var gmi = mi.MakeGenericMethod(new Type[] { destInfo.Type });
+                    var mappingPropsExps = Expression.Constant(mappableDestProps);
+                    var callExp = Expression.Call(null, gmi, parameter, mappingPropsExps);
+                    return Expression.Lambda(callExp, parameter);
+                }
+            
             }
             if (pair.DestType == typeof(Object))
                 destInfo = srcInfo;
-            var mappableSourceProperties = srcInfo.GetAllProperties().Where(p=>!p.HasAttribute<NoMapAttribute>()).ToArray();
+            var mappableSourceProperties = srcInfo.GetAllProperties().Where(p => !p.HasAttribute<NoMapAttribute>()).ToArray();
+
             if (destInfo.Kind == TypeKind.Complex)
             {
                 var writableDestinationProperties = destInfo.GetAllProperties().Where(p => p.Raw.CanWrite &&  !p.HasAttribute<NoMapAttribute>());

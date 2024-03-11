@@ -82,7 +82,7 @@ namespace Net.Reflection.Test
         public void AsCloned2PerfomenceTest()
         {
             var testObj = this.CreateTestObject();
-            var small=testObj.AsCloned<TestSmallObject>();
+            var small=testObj.AsCloned<TestInterface>();
             var jobj = JToken.Parse(small.Serialize());
             var item = jobj.AsCloned<TestSmallObject>();
             var sw = Stopwatch.StartNew();
@@ -107,10 +107,10 @@ namespace Net.Reflection.Test
         {
             var result=new TestObject();
             var typeInfo=typeof(TestObject).GetInfo();
-            var list=new List<int>();  
+            var list=new List<NestedTestObject>();  
            for(var i = 0; i < 100; i++)
             {
-                list.Add(index++);
+                list.Add(CreateNestedTestObject());
             }
             result.List = list.ToArray();
             foreach(var prop in typeInfo.GetAllProperties())

@@ -9,7 +9,7 @@
       "Net.AllTest/1.0.0": {
         "dependencies": {
           "Microsoft.NET.Test.Sdk": "16.5.0",
-          "Net.All": "2.0.0",
+          "Net.All": "2.1.0",
           "coverlet.collector": "1.2.0",
           "xunit": "2.4.0",
           "xunit.runner.visualstudio": "2.4.0"
@@ -421,7 +421,7 @@
           "Microsoft.NET.Test.Sdk": "16.5.0"
         }
       },
-      "Net.All/2.0.0": {
+      "Net.All/2.1.0": {
         "dependencies": {
           "Combinatorics": "2.0.0",
           "Newtonsoft.Json": "13.0.3",
@@ -594,7 +594,7 @@
       "path": "xunit.runner.visualstudio/2.4.0",
       "hashPath": "xunit.runner.visualstudio.2.4.0.nupkg.sha512"
     },
-    "Net.All/2.0.0": {
+    "Net.All/2.1.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

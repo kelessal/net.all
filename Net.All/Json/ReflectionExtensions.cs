@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Net.Json
@@ -9,11 +10,13 @@ namespace Net.Json
     {
         public static bool IsCollectionType(this Type type)
         {
+
             if (!typeof(IEnumerable).IsAssignableFrom(type)) return false;
             if (type.IsArray && type.GetArrayRank() == 1) return true;
             if (!type.IsGenericType) return false;
             if (type.GetGenericArguments().Length != 1) return false;
-            return typeof(IEnumerable<>).MakeGenericType(GetCollectionElementType(type)).IsAssignableFrom(type);
+            var result= typeof(IEnumerable<>).MakeGenericType(GetCollectionElementType(type)).IsAssignableFrom(type);
+            return result;
         }
         public static Type GetCollectionElementType(this Type type)
         {

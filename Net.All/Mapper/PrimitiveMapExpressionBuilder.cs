@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Net.Reflection;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -11,8 +13,19 @@ namespace Net.Mapper
         static MethodInfo toStringMi = typeof(Object).GetMethod("ToString");
         static TDest MapJson<TDest>(JValue jobj)
         {
-            if (jobj == null) return default;
-            return jobj.ToObject<TDest>();
+            var value = jobj?.Value;
+            if (value == null) return default;
+            if (typeof(TDest) == typeof(TimeSpan)) 
+            {
+                var val = Convert.ToInt64(value);
+                var netticks = 10000 * val;
+                netticks = System.Math.Min(TimeSpan.MaxValue.Ticks, netticks);
+                netticks = System.Math.Max(TimeSpan.MinValue.Ticks, netticks);
+                value= new TimeSpan(netticks);
+            }
+            else
+                 value = jobj.Value.As(typeof(TDest));
+            return (TDest)value;
         }
         public static LambdaExpression Create(TypePair pair)
         {
