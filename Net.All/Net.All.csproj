@@ -3,13 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <IsPublishable>True</IsPublishable>
-	  <Version>2.0</Version>
+	  <Version>2.1</Version>
 	  <PackageProjectUrl>https://github.com/kelessal/net.all</PackageProjectUrl>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Expressions\Net.Expressions.csproj" />
+    <None Include="Extensions\Expressions\Net.Expressions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

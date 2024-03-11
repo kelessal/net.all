@@ -497,7 +497,7 @@
           "build/netcoreapp1.0/xunit.runner.visualstudio.props": {}
         }
       },
-      "Net.All/2.0.0": {
+      "Net.All/2.1.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
@@ -1163,7 +1163,7 @@
         "xunit.runner.visualstudio.nuspec"
       ]
     },
-    "Net.All/2.0.0": {
+    "Net.All/2.1.0": {
       "type": "project",
       "path": "../Net.All/Net.All.csproj",
       "msbuildProject": "../Net.All/Net.All.csproj"
@@ -1172,7 +1172,7 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "Microsoft.NET.Test.Sdk >= 16.5.0",
-      "Net.All >= 2.0.0",
+      "Net.All >= 2.1.0",
       "coverlet.collector >= 1.2.0",
       "xunit >= 2.4.0",
       "xunit.runner.visualstudio >= 2.4.0"
